@@ -9,6 +9,19 @@ class Helper {
     }
 }
 
+class Task {
+    private int id;
+    private String description;
+    private String status;
+
+    public Task(int id, String description, String status) {
+        this.id = id;
+        this.description = description;
+        this.status = status;
+    }
+
+}
+
 public class TaskTracker {
     static {
         Path path = Path.of("task.json");
@@ -32,6 +45,14 @@ public class TaskTracker {
                 """;
         Files.writeString(path, json);
 
-        Helper.printString(path);
+        String inp = Files.readString(path).strip();
+        inp = inp.substring(1, inp.length()-1);
+
+        inp.split("\\{");
+        String[] parts = inp.split("\\}");
+
+        for(String w : parts) {
+            System.out.println(w);
+        }
     }
 }

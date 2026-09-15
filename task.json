@@ -1,4 +1,4 @@
 [
-    {"id": 1,"status": "todo"},
-    {"id": 2,"status": "done"}
+    {"id": 1, "name": "laundry", "status": "todo"},
+    {"id": 2, "name": "cook", "status": "done"}
 ]
