@@ -4,11 +4,6 @@ import java.util.*;
 import java.time.LocalDateTime;
 
 class Helper {
-    static void printString() throws IOException {
-        String str = Files.readString(TaskTracker.PATH);
-        System.out.println(str);
-    }
-
     static Task stringToTask(String line) {
         Task task = new Task();
 
@@ -44,17 +39,21 @@ class Helper {
                 + "\"}";
     }
 
-    static List<Task> readData () throws IOException {
+    static List<Task> readData() throws IOException {
         String content = Files.readString(TaskTracker.PATH).strip();
         content = content.substring(1,content.length()-1).strip();
 
         String[] parts = content.split("},\\s*\\{");
 
+        List<Task> tasks = new ArrayList<>();
+
+        if(content.isEmpty()) {
+            return tasks;
+        }
+
         parts = Arrays.stream(parts)
                 .map(object -> object.replace("{", "").replace("}", "").strip())
                 .toArray(String[]::new);
-
-        List<Task> tasks = new ArrayList<>();
 
         for(String object : parts) {
             tasks.add(stringToTask(object));
@@ -63,21 +62,11 @@ class Helper {
         return tasks;
     }
 
-    static void add(String description) throws IOException {
-        List<Task> tasks = readData();
-
-        int maxId = 0;
-
-        for (Task task : tasks) {
-            maxId = Math.max(maxId, task.getId());
-        }
-
-        Task task = new Task(maxId + 1, description);
-        tasks.add(task);
-
+    static void writeData() throws IOException {
+        List<Task> tasks = TaskTracker.tasks;
         StringBuilder str = new StringBuilder("[\n");
 
-        for (int i = 0; i < tasks.size(); i++) {
+        for(int i = 0; i < tasks.size(); i++) {
             str.append("    ")
                .append(Helper.taskToString(tasks.get(i)));
 
@@ -95,6 +84,69 @@ class Helper {
                 str.toString(),
                 StandardOpenOption.TRUNCATE_EXISTING
         );
+    }
+
+    static void add(String description) throws IOException {
+        List<Task> tasks = TaskTracker.tasks;
+
+        int maxId = 0;
+
+        for (Task task : tasks) {
+            maxId = Math.max(maxId, task.getId());
+        }
+
+        Task task = new Task(maxId + 1, description);
+        tasks.add(task);
+
+        writeData();
+    }
+
+    static void delete(int id) throws IOException {
+        List<Task> tasks = TaskTracker.tasks;
+
+        for(int i = 0 ; i < tasks.size() ; i++) {
+            if(tasks.get(i).getId() == id) {
+                tasks.remove(i);
+                writeData();
+                return;
+            }
+        }
+
+        System.out.println("Task not found");
+    }
+
+    static void list(String status) {
+        for(Task task : TaskTracker.tasks) {
+            if (status == null || task.getStatus().equals(status)) {
+                System.out.println(task);
+            }
+        }
+    }
+
+    static void update(int id, String description) throws IOException {
+        for(Task task : TaskTracker.tasks) {
+            if(task.getId() == id) {
+                task.setDescription(description);
+                task.setUpdatedAt(LocalDateTime.now());
+                writeData();
+                return;
+            }
+        }
+
+        System.out.println("Task not found");
+    }
+
+    static void mark(int id, String status) throws IOException {
+        for(Task task : TaskTracker.tasks) {
+            if(task.getId() == id) {
+                task.setStatus(status);
+                task.setUpdatedAt(LocalDateTime.now());
+                writeData();
+                return;
+            }
+        }
+
+        System.out.println("Task not found");
     }
 }
 
@@ -173,21 +225,30 @@ class Task {
 
 public class TaskTracker {
     static final Path PATH = Path.of("task.json");
+    static List<Task> tasks;
 
     static {
         try {
-            if(!Files.exists(PATH) || Files.size(PATH) == 0) {
-                Files.writeString(PATH, "[\n]", StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            if (!Files.exists(PATH) || Files.size(PATH) == 0) {
+                Files.writeString(
+                        PATH,
+                        "[\n]",
+                        StandardOpenOption.CREATE,
+                        StandardOpenOption.TRUNCATE_EXISTING
+                );
             }
+
+            tasks = Helper.readData();
+
         } catch (IOException e) {
-            throw new ExceptionInInitializerError("Cannot create file task.json" + e.getMessage());
+            throw new ExceptionInInitializerError(
+                    "Cannot create file task.json" + e.getMessage()
+            );
         }
     }
-    public static void main(String[] args) throws IOException {
-        List<Task> tasks = Helper.readData();
 
-        for(Task task : tasks) {
-            System.out.println(task);
-        }
+    public static void main(String[] args) throws IOException {
+        Helper.mark(3, "in-progress");
+        Helper.list(null);
     }
 }
