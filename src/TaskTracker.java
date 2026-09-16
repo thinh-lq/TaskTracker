@@ -247,8 +247,114 @@ public class TaskTracker {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        Helper.mark(3, "in-progress");
-        Helper.list(null);
+    static void main(String[] args) throws IOException {
+        if (args.length == 0) {
+            System.out.println("No command provided");
+            return;
+        }
+
+        String command = args[0];
+
+        switch (command) {
+            case "add":
+                if (args.length < 2) {
+                    System.out.println("Description is required");
+                    return;
+                }
+
+                Helper.add(args[1]);
+                break;
+
+            case "update":
+                if (args.length < 3) {
+                    System.out.println("Id and description are required");
+                    return;
+                }
+
+                int updateId;
+
+                try {
+                    updateId = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid id");
+                    return;
+                }
+
+                Helper.update(updateId, args[2]);
+                break;
+
+            case "delete":
+                if (args.length < 2) {
+                    System.out.println("Id is required");
+                    return;
+                }
+
+                int deleteId;
+
+                try {
+                    deleteId = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid id");
+                    return;
+                }
+
+                Helper.delete(deleteId);
+                break;
+
+            case "mark-in-progress":
+                if (args.length < 2) {
+                    System.out.println("Id is required");
+                    return;
+                }
+
+                int inProgressId;
+
+                try {
+                    inProgressId = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid id");
+                    return;
+                }
+
+                Helper.mark(inProgressId, "in-progress");
+                break;
+
+            case "mark-done":
+                if (args.length < 2) {
+                    System.out.println("Id is required");
+                    return;
+                }
+
+                int doneId;
+
+                try {
+                    doneId = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid id");
+                    return;
+                }
+
+                Helper.mark(doneId, "done");
+                break;
+
+            case "list":
+                if (args.length == 1) {
+                    Helper.list(null);
+                    return;
+                }
+
+                String status = args[1];
+
+                if (!status.equals("done") && !status.equals("todo") && !status.equals("in-progress")) {
+                    System.out.println("Invalid status");
+                    return;
+                }
+
+                Helper.list(status);
+                break;
+
+            default:
+                System.out.println("Unknown command");
+        }
     }
 }
