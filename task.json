@@ -1,4 +1,4 @@
 [
-    {"id": 1, "description": "laundry cooking", "status": "todo"},
-    {"id": 2, "description": "cook", "status": "done"}
+    {"id": 1, "description": "laundry cooking", "status": "todo", "createdAt": "2026-09-15T10:30:00", "updatedAt": "2026-09-15T10:30:00"},
+    {"id": 2, "description": "cook", "status": "done", "createdAt": "2026-09-15T11:45:00", "updatedAt": "2026-09-16T14:20:00"}
 ]
