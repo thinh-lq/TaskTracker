@@ -39,20 +39,24 @@ public class TaskTracker {
 
         String json = """
                 [
-                    {"id": 1, "name": "laundry", "status": "todo"},
+                    {"id": 1, "name": "laundry cooking", "status": "todo"},
                     {"id": 2, "name": "cook", "status": "done"}
                 ]
                 """;
         Files.writeString(path, json);
 
-        String inp = Files.readString(path).strip();
-        inp = inp.substring(1, inp.length()-1);
+        String content = Files.readString(path).strip();
 
-        inp.split("\\{");
-        String[] parts = inp.split("\\}");
+        content = content.substring(1, content.length() - 1).strip();
 
-        for(String w : parts) {
-            System.out.println(w);
+        String[] objects = content.split("},\\s*\\{");
+
+        objects = Arrays.stream(objects)
+                .map(object -> object.replace("{", "").replace("}", ""))
+                .toArray(String[]::new);
+
+        for(String object : objects) {
+            System.out.println(object);
         }
     }
 }
