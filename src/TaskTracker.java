@@ -247,7 +247,7 @@ public class TaskTracker {
         }
     }
 
-    static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
         if (args.length == 0) {
             System.out.println("No command provided");
             return;
