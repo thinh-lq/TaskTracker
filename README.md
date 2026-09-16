@@ -29,8 +29,7 @@ No external libraries are required.
 
 ```text
 TaskTracker/
-├── src/
-│   └── TaskTracker.java
+│── TaskTracker.java
 ├── task.json
 ├── .gitignore
 └── README.md
